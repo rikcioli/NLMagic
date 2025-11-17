@@ -164,7 +164,7 @@ function psi_mq_mps(psi::MPS, q::Int=2)
     d = 2^N
     acc = 0.0
 
-    total = 4^N
+    #total = 4^N
     #prog = Progress(total, desc="Summing Pauli strings")
 
     for label_indices in IterTools.product(fill(1:4, N)...)
@@ -178,6 +178,7 @@ function psi_mq_mps(psi::MPS, q::Int=2)
     return -log2(acc)
 end
 
+"""Get the ground state of the transverse field Ising model with N sites, starting from initial state psi0"""
 function getState(h,N,psi0) 
     sites = siteinds(psi0) #conserve_szparity=true
     ampo = OpSum()
@@ -195,7 +196,7 @@ function getState(h,N,psi0)
     #psi0 = randomMPS(sites, 2)
     #symmetrize!(psi0)
     sweeps = Sweeps(20) # number of sweeps is 20
-    maxdim!(sweeps, 50, 100, 200, 500) # gradually increase states kept (200 -10 prima)
+    maxdim!(sweeps, 50, 100, 200, 500) 
     cutoff!(sweeps,1E-12)
     #noise!(sweeps, 1E-6, 1E-7, 1E-8, 0.0)
     energy,psi = dmrg(H,psi0,sweeps; outputlevel=1, ) 
@@ -203,15 +204,15 @@ function getState(h,N,psi0)
     return psi, sites, energy
 end 
 
-
+"""Exact upperbound non-local magic M2 for transverse field Ising model, N=3"""
 function M2_NL(h)
     term1 = 2 * log2((h - 1) * h + 1)
     term2 = log2(81)
     sqrt_term = sqrt((h - 1) * h + 1)
 
-    inner = 10 * sqrt_term + 1 +
+    inner = 10 * sqrt_term +
         h * (
-            -18 * sqrt_term + 1 +
+            -18 * sqrt_term +
             h * (
                 h * (77 * h + 4 * sqrt_term - 154) -
                 6 * (sqrt_term - 36)
